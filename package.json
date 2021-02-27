@@ -1,0 +1,20 @@
+{
+  "name": "pgp-extract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sigchain/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@msgpack/msgpack": "^2.0.0",
+    "bech32": "^1.1.4"
+  },
+  "devDependencies": {
+    "openpgp": "^4.10.8",
+    "prompt": "^1.0.0",
+    "sshpk": "^1.16.1"
+  }
+}
