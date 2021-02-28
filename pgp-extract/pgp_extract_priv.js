@@ -8,17 +8,22 @@ const prompt = require('prompt');
 const getPrompt = require('util').promisify(prompt.get).bind(prompt);
 
 (async () => {
-    const armoredKey = fs.readFileSync('./pgp_keys/sign_private.asc'); 
+    const armoredKey = fs.readFileSync('./pgp_keys/private.asc'); 
     const { keys: [pgpKey] } = await openpgp.key.readArmored(armoredKey);
 
-    const { passphrase } = await getPrompt([{ name: 'passphrase', hidden: true }]);
-    await pgpKey.decrypt(passphrase);
+    if (pgpKey.isDecrypted()) {
+      const { passphrase } = await getPrompt([{ name: 'passphrase', hidden: true }]);
+      await pgpKey.decrypt(passphrase);
+    }
 
-    const signKey = await pgpKey.getSigningKey();
+    // Note: There's no easy way to identify auth subkeys in OpenPGP.js
+    // You might need to mess around with this part of the code in order
+    // to select the right subkey.
+    const subKey = await pgpKey.getSigningKey();
 
-    assert.strictEqual(signKey.keyPacket.algorithm, 'eddsa');
+    assert.strictEqual(subKey.keyPacket.algorithm, 'eddsa');
 
-    const { Q, seed } = openpgp.crypto.publicKey.elliptic.eddsa.parseParams(signKey.keyPacket.params);
+    const { Q, seed } = openpgp.crypto.publicKey.elliptic.eddsa.parseParams(subKey.keyPacket.params);
 
     // Q is just the pubkey with the const 0x40 (64) as the first element
     // See RFC for more details:
