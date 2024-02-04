@@ -11,7 +11,7 @@ const getPrompt = require('util').promisify(prompt.get).bind(prompt);
     const armoredKey = fs.readFileSync('./pgp_keys/private.asc'); 
     const { keys: [pgpKey] } = await openpgp.key.readArmored(armoredKey);
 
-    if (pgpKey.isDecrypted()) {
+    if (pgpKey.isDecrypted() === false) {
       const { passphrase } = await getPrompt([{ name: 'passphrase', hidden: true }]);
       await pgpKey.decrypt(passphrase);
     }
